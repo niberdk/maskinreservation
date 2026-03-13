@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maskinreservation</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#0f1117;--surface:#181c25;--surface2:#1e2330;--border:#2a3045;
+  --accent:#e8b84b;--accent2:#f0ca7a;--red:#e05252;--green:#4caf82;--blue:#4a9eda;
+  --text:#e8eaf0;--muted:#7a8299;
+  --fd:'Barlow Condensed',sans-serif;--fb:'Barlow',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+/* LOGIN */
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:var(--bg);}
+.lcard{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:48px 40px 40px;width:380px;}
+.brand-name{font-family:var(--fd);font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.brand-sub{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px;margin-bottom:32px;}
+.lcard h2{font-family:var(--fd);font-size:22px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--fb);font-size:15px;outline:none;transition:border-color .2s;}
+.field input:focus,.field select:focus{border-color:var(--accent);}
+.btn-p{width:100%;background:var(--accent);color:#0f1117;border:none;padding:13px;font-family:var(--fd);font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:background .15s;}
+.btn-p:hover{background:var(--accent2);}
+.lerr{color:var(--red);font-size:13px;margin-top:12px;text-align:center;min-height:20px;}
+.demo-hint{margin-top:18px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.9;}
+.demo-hint strong{color:var(--accent);}
+
+/* APP */
+#app{display:none;min-height:100vh;position:relative;z-index:1;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-brand{font-family:var(--fd);font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.tr{display:flex;align-items:center;gap:14px;}
+.tu{font-size:13px;color:var(--muted);}
+.tu span{color:var(--text);font-weight:500;}
+.rb{padding:3px 8px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
+.rb-a{background:rgba(232,184,75,.15);color:var(--accent);border:1px solid rgba(232,184,75,.3);}
+.rb-b{background:rgba(122,130,153,.1);color:var(--muted);border:1px solid var(--border);}
+.btn-lo{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-family:var(--fb);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.btn-lo:hover{border-color:var(--red);color:var(--red);}
+
+/* NAV */
+.nav-tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;}
+.nav-tab{padding:14px 20px;font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.adm-tab{display:none;}
+.adm-tab.vis{display:block;}
+
+/* MAIN */
+.main{padding:28px;max-width:1200px;}
+
+/* STATS */
+.srow{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.sc{background:var(--surface);border:1px solid var(--border);padding:16px 20px;flex:1;min-width:130px;}
+.sl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.sv{font-family:var(--fd);font-size:34px;font-weight:700;line-height:1;}
+.sv.ca{color:var(--accent);}.sv.cg{color:var(--green);}.sv.cr{color:var(--red);}.sv.cb{color:var(--blue);}
+
+/* SEARCH */
+.sbar{display:flex;gap:12px;margin-bottom:22px;align-items:center;flex-wrap:wrap;}
+.swrap{position:relative;flex:1;min-width:200px;max-width:400px;}
+.swrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.sinput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 14px 11px 42px;font-family:var(--fb);font-size:15px;outline:none;transition:border-color .2s;}
+.sinput:focus{border-color:var(--accent);}
+.fsel{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--fb);font-size:14px;outline:none;cursor:pointer;}
+
+/* TABLE */
+.tw{background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--surface2);border-bottom:1px solid var(--border);}
+thead th{padding:11px 14px;text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--surface2);}
+tbody td{padding:12px 14px;font-size:14px;vertical-align:middle;}
+.mid{font-family:var(--fd);font-size:16px;font-weight:600;letter-spacing:1px;}
+.mname{color:var(--muted);font-size:12px;margin-top:2px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
+.badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.bl{background:rgba(76,175,130,.12);color:var(--green);border:1px solid rgba(76,175,130,.25);}
+.bl::before{background:var(--green);}
+.br{background:rgba(232,184,75,.1);color:var(--accent);border:1px solid rgba(232,184,75,.25);}
+.br::before{background:var(--accent);}
+
+/* BUTTONS */
+.btn-res{background:var(--accent);color:#0f1117;border:none;padding:7px 14px;font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;}
+.btn-res:hover{background:var(--accent2);}
+.btn-rel{background:transparent;color:var(--red);border:1px solid var(--red);padding:7px 14px;font-family:var(--fd);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.btn-rel:hover{background:rgba(224,82,82,.1);}
+.btn-add{background:var(--accent);color:#0f1117;border:none;padding:11px 18px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;white-space:nowrap;}
+.btn-add:hover{background:var(--accent2);}
+.btn-sm{background:transparent;color:var(--muted);border:1px solid var(--border);padding:5px 12px;font-size:12px;font-family:var(--fb);cursor:pointer;transition:all .15s;}
+.btn-sm:hover{border-color:var(--text);color:var(--text);}
+.btn-del{background:transparent;color:var(--red);border:1px solid var(--red);padding:5px 12px;font-size:12px;font-family:var(--fb);cursor:pointer;transition:all .15s;}
+.btn-del:hover{background:rgba(224,82,82,.1);}
+
+/* COUNTDOWN */
+.cd{font-size:12px;color:var(--muted);margin-top:2px;}
+.cd.urg{color:var(--red);font-weight:600;}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mo.open{opacity:1;pointer-events:all;}
+.md{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:34px 30px;width:420px;transform:translateY(12px);transition:transform .2s;}
+.mo.open .md{transform:translateY(0);}
+.md h3{font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.md-meta{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.md-meta strong{color:var(--accent);}
+.md-info{background:var(--bg);border:1px solid var(--border);padding:13px 15px;font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.7;}
+.md-info span{color:var(--text);}
+.md-act{display:flex;gap:10px;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:11px;font-family:var(--fd);font-size:14px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+.btn-cancel:hover{border-color:var(--text);color:var(--text);}
+.btn-conf{flex:2;background:var(--accent);border:none;color:#0f1117;padding:11px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;}
+.btn-conf:hover{background:var(--accent2);}
+
+/* SECTION */
+.sec{background:var(--surface);border:1px solid var(--border);padding:22px;margin-bottom:20px;}
+.sec-title{font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.add-form{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
+.add-form .field{margin-bottom:0;flex:1;min-width:120px;}
+
+/* LOG */
+.log-entry{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);padding:11px 14px;margin-bottom:5px;font-size:13px;}
+.log-entry.login{border-left-color:var(--blue);}
+.log-entry.reserve{border-left-color:var(--accent);}
+.log-entry.release{border-left-color:var(--green);}
+.log-entry.admin{border-left-color:var(--muted);}
+.log-entry.logout{border-left-color:var(--red);}
+.log-time{font-size:11px;color:var(--muted);margin-top:3px;}
+.lf-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.lf-btn{padding:5px 14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;}
+.lf-btn.active,.lf-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* DASHBOARD */
+.dg2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
+.cc{background:var(--surface);border:1px solid var(--border);padding:20px;}
+.ct{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.cw{position:relative;height:200px;}
+.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.lb-item:last-child{border-bottom:none;}
+.lb-rank{font-family:var(--fd);font-size:18px;font-weight:700;color:var(--muted);width:24px;text-align:center;}
+.lb-rank.top{color:var(--accent);}
+.lb-name{flex:1;font-size:13px;}
+.lb-bar-bg{flex:2;background:var(--bg);height:5px;}
+.lb-bar{height:5px;background:var(--accent);}
+.lb-n{font-family:var(--fd);font-size:18px;font-weight:700;}
+.ari{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.ari:last-child{border-bottom:none;}
+
+/* USERS */
+.u-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);}
+.u-row:last-child{border-bottom:none;}
+.u-info{display:flex;align-items:center;gap:10px;}
+.u-av{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:15px;font-weight:700;color:var(--muted);}
+.u-name{font-size:14px;font-weight:500;}
+.u-un{font-size:12px;color:var(--muted);}
+.u-act{display:flex;gap:8px;align-items:center;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);padding:13px 18px;font-size:14px;z-index:999;transform:translateX(120%);transition:transform .3s;max-width:300px;}
+.toast.show{transform:translateX(0);}
+.toast.err{border-left-color:var(--red);}
+.toast.ok{border-left-color:var(--green);}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:13px;}
+
+@media(max-width:700px){.dg2{grid-template-columns:1fr;}.srow{flex-direction:column;}.md{width:95vw;padding:22px 18px;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lcard">
+    <div class="brand-name" id="bn-login">DIN VIRKSOMHED</div>
+    <div class="brand-sub">Maskinreservation</div>
+    <h2>Log ind</h2>
+    <div class="field"><label>Brugernavn</label><input type="text" id="lu" placeholder="Brugernavn" autocomplete="username"></div>
+    <div class="field"><label>Adgangskode</label><input type="password" id="lp" placeholder="Adgangskode" autocomplete="current-password"></div>
+    <button class="btn-p" onclick="doLogin()">Log ind</button>
+    <div class="lerr" id="lerr"></div>
+    <div class="demo-hint">
+      <strong>Demo login:</strong><br>
+      Admin: <strong>admin</strong> / <strong>admin</strong><br>
+      Bruger: <strong>bruger1</strong> / <strong>pas001</strong>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand" id="tb-brand">DIN VIRKSOMHED</div>
+    <div class="tr">
+      <div class="tu">Logget ind som <span id="cur-name"></span></div>
+      <span class="rb" id="cur-rb"></span>
+      <button class="btn-lo" onclick="doLogout()">Log ud</button>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-tab="maskiner" onclick="go('maskiner')">Maskiner</button>
+    <button class="nav-tab adm-tab" data-tab="dashboard" onclick="go('dashboard')">Dashboard</button>
+    <button class="nav-tab adm-tab" data-tab="log" onclick="go('log')">Aktivitetslog</button>
+    <button class="nav-tab adm-tab" data-tab="brugere" onclick="go('brugere')">Brugere</button>
+    <button class="nav-tab adm-tab" data-tab="admin" onclick="go('admin')">Admin</button>
+  </div>
+
+  <!-- MASKINER -->
+  <div class="main" id="tab-maskiner">
+    <div class="srow" id="stats-row"></div>
+    <div class="sbar">
+      <div class="swrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="sinput" type="text" id="si" placeholder="Søg på 7-cifret ID eller navn..." oninput="rMachines()">
+      </div>
+      <select class="fsel" id="fs" onchange="rMachines()">
+        <option value="alle">Alle maskiner</option>
+        <option value="ledig">Kun ledige</option>
+        <option value="reserveret">Kun reserverede</option>
+      </select>
+    </div>
+    <div class="tw"><table>
+      <thead><tr><th>Maskine ID</th><th>Status</th><th>Reserveret af</th><th>Udløber</th><th>Handling</th></tr></thead>
+      <tbody id="mtb"></tbody>
+    </table></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="main" id="tab-dashboard" style="display:none">
+    <div class="srow" id="d-stats"></div>
+    <div class="dg2">
+      <div class="cc"><div class="ct">Reservationer pr. måned</div><div class="cw"><canvas id="c-monthly"></canvas></div></div>
+      <div class="cc"><div class="ct">Top brugere — reservationer</div><div id="lb"></div></div>
+    </div>
+    <div class="dg2">
+      <div class="cc"><div class="ct">Aktive reservationer nu</div><div id="ar-list"></div></div>
+      <div class="cc"><div class="ct">Ledig vs. reserveret</div><div class="cw"><canvas id="c-donut"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="main" id="tab-log" style="display:none">
+    <div class="lf-row">
+      <button class="lf-btn active" onclick="fLog('alle',this)">Alle</button>
+      <button class="lf-btn" onclick="fLog('login',this)">Logins</button>
+      <button class="lf-btn" onclick="fLog('reserve',this)">Reservationer</button>
+      <button class="lf-btn" onclick="fLog('release',this)">Frigivelser</button>
+      <button class="lf-btn" onclick="fLog('admin',this)">Admin</button>
+    </div>
+    <div id="log-list"></div>
+  </div>
+
+  <!-- BRUGERE -->
+  <div class="main" id="tab-brugere" style="display:none">
+    <div class="sec">
+      <div class="sec-title">Tilføj bruger</div>
+      <div class="add-form">
+        <div class="field"><label>Brugernavn</label><input type="text" id="nu-u" placeholder="f.eks. jens123"></div>
+        <div class="field"><label>Visningsnavn</label><input type="text" id="nu-d" placeholder="f.eks. Jens Nielsen"></div>
+        <div class="field"><label>Adgangskode</label><input type="password" id="nu-p" placeholder="Adgangskode"></div>
+        <div class="field"><label>Rolle</label><select id="nu-r"><option value="bruger">Bruger</option><option value="admin">Admin</option></select></div>
+        <button class="btn-add" onclick="addUser()">+ Tilføj</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Admin-brugere</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Har adgang til Dashboard, Aktivitetslog, Brugerstyring og Admin-panelet.</p>
+      <div id="au-list"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Normale brugere</div>
+      <div id="nu-list"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN (maskiner) -->
+  <div class="main" id="tab-admin" style="display:none">
+    <div class="sec">
+      <div class="sec-title">Tilføj maskine</div>
+      <div class="add-form">
+        <div class="field"><label>7-cifret ID</label><input type="text" id="nm-id" placeholder="1234567" maxlength="7"></div>
+        <div class="field" style="flex:2"><label>Navn / beskrivelse</label><input type="text" id="nm-name" placeholder="f.eks. Traktor Case IH 140"></div>
+        <button class="btn-add" onclick="addMachine()">+ Tilføj</button>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sec-title">Alle maskiner</div>
+      <div class="tw" style="margin-bottom:0"><table>
+        <thead><tr><th>ID</th><th>Navn</th><th>Status</th><th>Reserveret af</th><th>Fjern</th></tr></thead>
+        <tbody id="am-tb"></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mo" id="modal">
+  <div class="md">
+    <h3 id="m-title"></h3>
+    <div class="md-meta" id="m-meta"></div>
+    <div class="md-info" id="m-info"></div>
+    <div class="md-act">
+      <button class="btn-cancel" onclick="closeModal()">Annuller</button>
+      <button class="btn-conf" id="m-btn">Bekræft</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BRAND = 'DIN VIRKSOMHED';
+const RES_DAYS = 7;
+
+let cu = null, logFilter = 'alle', pendId = null, pendAct = null, charts = {};
+
+const D = 86400000, N = Date.now();
+
+let users = {
+  'admin':   {password:'admin',  displayName:'Admin Bruger', role:'admin'},
+  'admin2':  {password:'admin2', displayName:'Admin 2',      role:'admin'},
+  'bruger1': {password:'pas001', displayName:'Lars Jensen',  role:'bruger'},
+  'bruger2': {password:'pas002', displayName:'Mette Holm',   role:'bruger'},
+  'bruger3': {password:'pas003', displayName:'Søren Dahl',   role:'bruger'},
+  'bruger4': {password:'pas004', displayName:'Anne Kvist',   role:'bruger'},
+  'bruger5': {password:'pas005', displayName:'Kim Poulsen',  role:'bruger'},
+};
+
+let machines = {
+  '1234567':{navn:'Traktor Case IH 140',   status:'reserveret',reserveretAf:'Lars Jensen', reserveretDato:'10/06/2025',udloeber:N+3*D},
+  '2345678':{navn:'Mejetærsker Claas',     status:'ledig',    reserveretAf:null,reserveretDato:null,udloeber:null},
+  '3456789':{navn:'Frontlæsser JCB 3CX',  status:'reserveret',reserveretAf:'Mette Holm',  reserveretDato:'08/06/2025',udloeber:N+1*D},
+  '4567890':{navn:'Sprøjte Hardi Navigator',status:'ledig',   reserveretAf:null,reserveretDato:null,udloeber:null},
+  '5678901':{navn:'Plov Kverneland 5-fure',status:'reserveret',reserveretAf:'Lars Jensen', reserveretDato:'09/06/2025',udloeber:N+5*D},
+  '6789012':{navn:'Harvester Fendt 9490X', status:'ledig',    reserveretAf:null,reserveretDato:null,udloeber:null},
+  '7890123':{navn:'Minilæsser Bobcat S450',status:'reserveret',reserveretAf:'Søren Dahl',  reserveretDato:'11/06/2025',udloeber:N+6*D},
+  '8901234':{navn:'Teleskoplæsser Manitou',status:'ledig',    reserveretAf:null,reserveretDato:null,udloeber:null},
+  '9012345':{navn:'Slagleklipper Dücker',  status:'ledig',    reserveretAf:null,reserveretDato:null,udloeber:null},
+  '9123456':{navn:'Gyllevogn Joskin 16m',  status:'reserveret',reserveretAf:'Anne Kvist',  reserveretDato:'07/06/2025',udloeber:N+2*D},
+};
+
+let logs = [
+  {type:'login',   tekst:'Logget ind',                          bruger:'Lars Jensen',   tid:new Date(N-2*3600000)},
+  {type:'reserve', tekst:'Reserveret maskine 1234567 (Traktor Case IH 140)', bruger:'Lars Jensen',   tid:new Date(N-2*3600000),maskinId:'1234567'},
+  {type:'reserve', tekst:'Reserveret maskine 5678901 (Plov Kverneland)',     bruger:'Lars Jensen',   tid:new Date(N-2*3600000),maskinId:'5678901'},
+  {type:'login',   tekst:'Logget ind',                          bruger:'Mette Holm',    tid:new Date(N-5*3600000)},
+  {type:'reserve', tekst:'Reserveret maskine 3456789 (Frontlæsser JCB)',     bruger:'Mette Holm',    tid:new Date(N-5*3600000),maskinId:'3456789'},
+  {type:'login',   tekst:'Logget ind',                          bruger:'Søren Dahl',    tid:new Date(N-8*3600000)},
+  {type:'reserve', tekst:'Reserveret maskine 7890123 (Bobcat S450)',         bruger:'Søren Dahl',    tid:new Date(N-8*3600000),maskinId:'7890123'},
+  {type:'login',   tekst:'Logget ind',                          bruger:'Anne Kvist',    tid:new Date(N-26*3600000)},
+  {type:'reserve', tekst:'Reserveret maskine 9123456 (Gyllevogn Joskin)',    bruger:'Anne Kvist',    tid:new Date(N-26*3600000),maskinId:'9123456'},
+  {type:'release', tekst:'Frigivet maskine 2345678 (Mejetærsker Claas)',     bruger:'Admin Bruger',  tid:new Date(N-30*3600000),maskinId:'2345678'},
+  {type:'admin',   tekst:'Maskine tilføjet: 8901234',            bruger:'Admin Bruger',  tid:new Date(N-48*3600000)},
+  {type:'login',   tekst:'Logget ind',                          bruger:'Kim Poulsen',   tid:new Date(N-50*3600000)},
+  {type:'logout',  tekst:'Logget ud',                           bruger:'Kim Poulsen',   tid:new Date(N-49*3600000)},
+];
+
+const monthlyDemo = [4,7,5,9,12,8,11,6,14,10,8,logs.filter(l=>l.type==='reserve').length];
+const mNames = ['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'];
+
+document.getElementById('bn-login').textContent = BRAND;
+document.getElementById('tb-brand').textContent = BRAND;
+document.title = BRAND + ' — Maskinreservation';
+
+// ── LOGIN ──
+function doLogin() {
+  const u = document.getElementById('lu').value.trim().toLowerCase();
+  const p = document.getElementById('lp').value;
+  const user = users[u];
+  if (!user || user.password !== p) { document.getElementById('lerr').textContent = 'Forkert brugernavn eller adgangskode.'; return; }
+  cu = {username:u, ...user};
+  alog('login','Logget ind','',cu.displayName);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('cur-name').textContent = user.displayName;
+  const rb = document.getElementById('cur-rb');
+  rb.textContent = user.role === 'admin' ? 'Admin' : 'Bruger';
+  rb.className = 'rb ' + (user.role === 'admin' ? 'rb-a' : 'rb-b');
+  if (user.role === 'admin') document.querySelectorAll('.adm-tab').forEach(e => e.classList.add('vis'));
+  rAll(); checkExp();
+}
+
+function doLogout() {
+  alog('logout','Logget ud','',cu.displayName);
+  cu = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lu').value = ''; document.getElementById('lp').value = '';
+  document.getElementById('lerr').textContent = '';
+  document.querySelectorAll('.adm-tab').forEach(e => e.classList.remove('vis'));
+  Object.values(charts).forEach(c => c.destroy()); charts = {};
+  go('maskiner');
+}
+
+document.getElementById('lp').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ── HELPERS ──
+function alog(type, tekst, maskinId, bruger) {
+  logs.unshift({type, tekst, maskinId:maskinId||'', tid:new Date(), bruger: bruger || cu?.displayName});
+}
+function fd(d) { return d ? new Date(d).toLocaleDateString('da-DK') : ''; }
+function ft(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('da-DK') + ' kl. ' + dt.toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
+}
+function cd(ms) {
+  if (!ms) return {text:'—',urg:false};
+  const diff = ms - Date.now();
+  if (diff <= 0) return {text:'Udløbet',urg:true};
+  const d = Math.floor(diff/D), h = Math.floor((diff%D)/3600000);
+  return {text: d>0 ? `${d}d ${h}t tilbage` : `${h}t tilbage`, urg: d<1};
+}
+function checkExp() {
+  Object.entries(machines).forEach(([id,m]) => {
+    if (m.status==='reserveret' && m.udloeber && m.udloeber<=Date.now()) {
+      const prev = m.reserveretAf;
+      machines[id] = {...m, status:'ledig', reserveretAf:null, reserveretDato:null, udloeber:null};
+      alog('release',`Auto-frigivet (udløbet) — var reserveret af ${prev}`,id,'System');
+    }
+  });
+  setTimeout(checkExp, 60000);
+}
+
+// ── RENDER ALL ──
+function rAll() {
+  rMachines(); rStats();
+  if (cu?.role==='admin') { rLog(); rAdminM(); rUsers(); }
+}
+
+// ── STATS ──
+function rStats() {
+  const total = Object.keys(machines).length;
+  const res = Object.values(machines).filter(m=>m.status==='reserveret').length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="sc"><div class="sl">Total</div><div class="sv ca">${total}</div></div>
+    <div class="sc"><div class="sl">Ledige</div><div class="sv cg">${total-res}</div></div>
+    <div class="sc"><div class="sl">Reserverede</div><div class="sv cr">${res}</div></div>
+    <div class="sc"><div class="sl">Udnyttelse</div><div class="sv cb">${total?Math.round(res/total*100):0}%</div></div>`;
+}
+
+// ── MASKINER ──
+function rMachines() {
+  const search = (document.getElementById('si')?.value||'').toLowerCase();
+  const filter = document.getElementById('fs')?.value||'alle';
+  const list = Object.entries(machines)
+    .filter(([id,m])=>{
+      const ms=!search||id.includes(search)||(m.navn||'').toLowerCase().includes(search);
+      return ms && (filter==='alle'||m.status===filter);
+    }).sort((a,b)=>a[0].localeCompare(b[0]));
+
+  const tbody = document.getElementById('mtb');
+  if (!list.length) { tbody.innerHTML=`<tr><td colspan="5"><div class="empty">Ingen maskiner matcher søgningen.</div></td></tr>`; return; }
+
+  tbody.innerHTML = list.map(([id,m])=>{
+    const isR = m.status==='reserveret';
+    const badge = isR ? `<span class="badge br">Reserveret</span>` : `<span class="badge bl">Ledig</span>`;
+    const cdd = cd(m.udloeber);
+    const udl = isR ? `<div class="cd ${cdd.urg?'urg':''}">${cdd.text}</div><div style="font-size:11px;color:var(--muted)">${m.udloeber?'Udl. '+fd(m.udloeber):''}</div>` : '—';
+    const resBy = isR ? `<div style="font-size:13px">${m.reserveretAf}</div><div style="font-size:11px;color:var(--muted)">${m.reserveretDato||''}</div>` : '—';
+    const canRel = isR && (cu.role==='admin' || cu.displayName===m.reserveretAf);
+    const action = !isR
+      ? `<button class="btn-res" onclick="openM('reserve','${id}')">Reservér</button>`
+      : canRel
+        ? `<button class="btn-rel" onclick="openM('release','${id}')">Frigiv</button>`
+        : `<span style="font-size:12px;color:var(--muted)">Reserveret</span>`;
+    return `<tr><td><div class="mid">${id}</div><div class="mname">${m.navn||''}</div></td><td>${badge}</td><td>${resBy}</td><td>${udl}</td><td>${action}</td></tr>`;
+  }).join('');
+}
+
+// ── MODAL ──
+function openM(action, id) {
+  const m = machines[id]; pendId=id; pendAct=action;
+  const btn = document.getElementById('m-btn');
+  if (action==='reserve') {
+    document.getElementById('m-title').textContent = 'Reservér maskine';
+    document.getElementById('m-meta').innerHTML = `Maskine <strong>${id}</strong>${m.navn?' — '+m.navn:''}`;
+    document.getElementById('m-info').innerHTML = `Reserveres af: <span>${cu.displayName}</span><br>Gælder i <span>${RES_DAYS} dage</span> — frigives automatisk herefter.`;
+    btn.textContent='Bekræft reservation'; btn.style.background='';
+  } else {
+    document.getElementById('m-title').textContent = 'Frigiv maskine';
+    document.getElementById('m-meta').innerHTML = `Maskine <strong>${id}</strong>${m.navn?' — '+m.navn:''}`;
+    document.getElementById('m-info').innerHTML = `Reserveret af: <span>${m.reserveretAf}</span><br>Maskinen markeres som ledig.`;
+    btn.textContent='Bekræft frigivelse'; btn.style.background='var(--red)';
+  }
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); document.getElementById('m-btn').style.background=''; }
+document.getElementById('m-btn').onclick = function() { pendAct==='reserve'?doRes():doRel(); };
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target===document.getElementById('modal')) closeModal(); });
+
+function doRes() {
+  const id=pendId, m=machines[id];
+  machines[id]={...m,status:'reserveret',reserveretAf:cu.displayName,reserveretDato:fd(Date.now()),udloeber:Date.now()+RES_DAYS*D};
+  alog('reserve',`Reserveret maskine ${id}${m.navn?' ('+m.navn+')':''}`,id);
+  closeModal(); rAll(); toast(`Maskine ${id} reserveret i ${RES_DAYS} dage.`,'ok');
+}
+function doRel() {
+  const id=pendId, m=machines[id];
+  machines[id]={...m,status:'ledig',reserveretAf:null,reserveretDato:null,udloeber:null};
+  alog('release',`Frigivet maskine ${id}${m.navn?' ('+m.navn+')':''}`,id);
+  closeModal(); rAll(); toast(`Maskine ${id} er nu ledig.`,'ok');
+}
+
+// ── LOG ──
+function fLog(type, btn) {
+  logFilter=type;
+  document.querySelectorAll('.lf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); rLog();
+}
+function rLog() {
+  const el = document.getElementById('log-list');
+  const list = logFilter==='alle' ? logs : logs.filter(l=>l.type===logFilter);
+  if (!list.length) { el.innerHTML=`<div class="empty">Ingen aktivitet.</div>`; return; }
+  el.innerHTML = list.map(l=>`
+    <div class="log-entry ${l.type}">
+      <strong>${l.bruger}</strong> — ${l.tekst}
+      <div class="log-time">${ft(l.tid)}</div>
+    </div>`).join('');
+}
+
+// ── ADMIN MASKINER ──
+function addMachine() {
+  const id=document.getElementById('nm-id').value.trim();
+  const navn=document.getElementById('nm-name').value.trim();
+  if (!/^\d{7}$/.test(id)) { toast('ID skal være præcis 7 cifre.','err'); return; }
+  if (machines[id]) { toast('Maskine '+id+' findes allerede.','err'); return; }
+  machines[id]={navn,status:'ledig',reserveretAf:null,reserveretDato:null,udloeber:null};
+  alog('admin',`Maskine tilføjet: ${id}${navn?' ('+navn+')':''}`);
+  document.getElementById('nm-id').value=''; document.getElementById('nm-name').value='';
+  rAll(); toast('Maskine '+id+' tilføjet.','ok');
+}
+function delMachine(id) {
+  if (!confirm(`Fjern maskine ${id}?`)) return;
+  const navn=machines[id]?.navn||'';
+  delete machines[id];
+  alog('admin',`Maskine fjernet: ${id}${navn?' ('+navn+')':''}`);
+  rAll(); toast('Maskine '+id+' fjernet.','ok');
+}
+function rAdminM() {
+  const tb=document.getElementById('am-tb'); if(!tb) return;
+  const list=Object.entries(machines).sort((a,b)=>a[0].localeCompare(b[0]));
+  if (!list.length) { tb.innerHTML=`<tr><td colspan="5"><div class="empty">Ingen maskiner.</div></td></tr>`; return; }
+  tb.innerHTML=list.map(([id,m])=>`<tr>
+    <td class="mid">${id}</td>
+    <td>${m.navn||'—'}</td>
+    <td>${m.status==='reserveret'?'<span class="badge br">Reserveret</span>':'<span class="badge bl">Ledig</span>'}</td>
+    <td style="font-size:13px">${m.reserveretAf||'—'}</td>
+    <td><button class="btn-del" onclick="delMachine('${id}')">Fjern</button></td>
+  </tr>`).join('');
+}
+
+// ── BRUGERE ──
+function addUser() {
+  const u=document.getElementById('nu-u').value.trim().toLowerCase();
+  const d=document.getElementById('nu-d').value.trim();
+  const p=document.getElementById('nu-p').value;
+  const r=document.getElementById('nu-r').value;
+  if (!u||!d||!p) { toast('Udfyld alle felter.','err'); return; }
+  if (users[u]) { toast('Brugernavnet er i brug.','err'); return; }
+  users[u]={password:p,displayName:d,role:r};
+  alog('admin',`Bruger oprettet: ${d} (${r})`);
+  document.getElementById('nu-u').value=''; document.getElementById('nu-d').value=''; document.getElementById('nu-p').value='';
+  rUsers(); toast(`${d} oprettet som ${r}.`,'ok');
+}
+function delUser(username) {
+  if (username===cu.username) { toast('Du kan ikke slette dig selv.','err'); return; }
+  if (!confirm(`Slet bruger ${users[username]?.displayName}?`)) return;
+  alog('admin',`Bruger slettet: ${users[username].displayName}`);
+  delete users[username]; rUsers(); toast('Bruger slettet.','ok');
+}
+function toggleRole(username) {
+  if (username===cu.username) { toast('Du kan ikke ændre din egen rolle.','err'); return; }
+  const u=users[username];
+  u.role = u.role==='admin'?'bruger':'admin';
+  alog('admin',`Rolle ændret: ${u.displayName} → ${u.role}`);
+  rUsers(); toast(`${u.displayName} er nu ${u.role}.`,'ok');
+}
+function rUsers() {
+  const al=document.getElementById('au-list'), nl=document.getElementById('nu-list');
+  if (!al||!nl) return;
+  const row=([un,u])=>`<div class="u-row">
+    <div class="u-info">
+      <div class="u-av">${u.displayName.charAt(0)}</div>
+      <div><div class="u-name">${u.displayName}</div><div class="u-un">@${un}</div></div>
+    </div>
+    <div class="u-act">
+      <button class="btn-sm" onclick="toggleRole('${un}')">${u.role==='admin'?'Gør til bruger':'Gør til admin'}</button>
+      <button class="btn-del" onclick="delUser('${un}')">Slet</button>
+    </div>
+  </div>`;
+  const admins=Object.entries(users).filter(([,u])=>u.role==='admin');
+  const normals=Object.entries(users).filter(([,u])=>u.role==='bruger');
+  al.innerHTML=admins.length?admins.map(row).join(''):`<div class="empty" style="padding:16px">Ingen admins.</div>`;
+  nl.innerHTML=normals.length?normals.map(row).join(''):`<div class="empty" style="padding:16px">Ingen brugere.</div>`;
+}
+
+// ── DASHBOARD ──
+function rDash() {
+  const total=Object.keys(machines).length;
+  const res=Object.values(machines).filter(m=>m.status==='reserveret').length;
+  const ledig=total-res;
+  const thisM=logs.filter(l=>l.type==='reserve'&&new Date(l.tid).getMonth()===new Date().getMonth()).length;
+  const logins=logs.filter(l=>l.type==='login').length;
+
+  document.getElementById('d-stats').innerHTML=`
+    <div class="sc"><div class="sl">Maskiner i alt</div><div class="sv ca">${total}</div></div>
+    <div class="sc"><div class="sl">Aktive reserv.</div><div class="sv cr">${res}</div></div>
+    <div class="sc"><div class="sl">Denne måned</div><div class="sv cb">${thisM}</div></div>
+    <div class="sc"><div class="sl">Logins total</div><div class="sv">${logins}</div></div>`;
+
+  // Monthly bar
+  const mc=document.getElementById('c-monthly');
+  if (charts.m) charts.m.destroy();
+  charts.m=new Chart(mc,{type:'bar',data:{labels:mNames,datasets:[{data:monthlyDemo,backgroundColor:'rgba(232,184,75,0.22)',borderColor:'rgba(232,184,75,0.75)',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a8299',font:{family:'Barlow',size:11}},grid:{color:'#2a3045'}},y:{ticks:{color:'#7a8299',font:{family:'Barlow',size:11}},grid:{color:'#2a3045'}}}}});
+
+  // Donut
+  const dc=document.getElementById('c-donut');
+  if (charts.d) charts.d.destroy();
+  charts.d=new Chart(dc,{type:'doughnut',data:{labels:['Ledige','Reserverede'],datasets:[{data:[ledig,res],backgroundColor:['rgba(76,175,130,0.55)','rgba(232,184,75,0.55)'],borderColor:['rgba(76,175,130,1)','rgba(232,184,75,1)'],borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8299',font:{family:'Barlow',size:12},padding:14}}}}});
+
+  // Leaderboard
+  const counts={};
+  logs.filter(l=>l.type==='reserve').forEach(l=>{ counts[l.bruger]=(counts[l.bruger]||0)+1; });
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max=sorted[0]?.[1]||1;
+  document.getElementById('lb').innerHTML=sorted.length
+    ? sorted.slice(0,6).map(([name,n],i)=>`<div class="lb-item">
+        <div class="lb-rank ${i===0?'top':''}">${i+1}</div>
+        <div class="lb-name">${name}</div>
+        <div class="lb-bar-bg"><div class="lb-bar" style="width:${Math.round(n/max*100)}%"></div></div>
+        <div class="lb-n">${n}</div>
+      </div>`).join('')
+    : `<div class="empty" style="padding:20px">Ingen data.</div>`;
+
+  // Active reservations
+  const active=Object.entries(machines).filter(([,m])=>m.status==='reserveret');
+  const el=document.getElementById('ar-list');
+  el.innerHTML=active.length
+    ? active.map(([id,m])=>{
+        const cdd=cd(m.udloeber);
+        return `<div class="ari">
+          <div><div style="font-weight:500;font-size:13px">${m.navn||id}</div><div style="font-size:12px;color:var(--muted)">${id} · ${m.reserveretAf}</div></div>
+          <div class="cd ${cdd.urg?'urg':''}">${cdd.text}</div>
+        </div>`;
+      }).join('')
+    : `<div class="empty" style="padding:20px">Ingen aktive reservationer.</div>`;
+}
+
+// ── TABS ──
+function go(tab) {
+  ['maskiner','dashboard','log','brugere','admin'].forEach(t=>{
+    const el=document.getElementById('tab-'+t);
+    if(el) el.style.display=t===tab?'block':'none';
+    const btn=document.querySelector(`[data-tab="${t}"]`);
+    if(btn) btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='dashboard') rDash();
+  if(tab==='log') rLog();
+  if(tab==='brugere') rUsers();
+  if(tab==='admin') rAdminM();
+}
+
+// ── TOAST ──
+function toast(msg, type='') {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show '+type;
+  setTimeout(()=>t.className='toast',3500);
+}
+</script>
+</body>
+</html>
