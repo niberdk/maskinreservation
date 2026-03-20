@@ -6,52 +6,52 @@
 <title>STILL Danmark — Maskinreservation</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --bg:#111318;--surface:#1a1d26;--surface2:#21252f;--border:#2c3040;
-  --accent:#E35205;--accent2:#F06A25;--accent-soft:rgba(227,82,5,0.12);
-  --red:#e05252;--green:#4caf82;--blue:#4a9eda;
-  --text:#e8eaf0;--muted:#7a8299;
-  --ff:'Inter',system-ui,sans-serif;
+  --bg:#f5f5f5;--surface:#ffffff;--surface2:#fafafa;--border:#e0e0e0;
+  --accent:#E35205;--accent2:#d14a00;--accent-soft:rgba(227,82,5,0.08);
+  --red:#d32f2f;--green:#2e7d32;--blue:#1565c0;
+  --text:#1a1a1a;--muted:#757575;--muted2:#9e9e9e;
+  --ff:'Inter',system-ui,-apple-system,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:var(--ff);font-size:14px;min-height:100vh;}
 
 /* LOGIN */
-#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:var(--bg);}
-.lcard{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:48px 40px 40px;width:400px;border-radius:8px;}
+#login-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:#f5f5f5;}
+.lcard{background:#fff;border:1px solid var(--border);border-top:3px solid var(--accent);padding:48px 40px 40px;width:400px;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.08);}
 .brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
-.brand-logo img{height:32px;}
-.brand-name{font-size:24px;font-weight:700;letter-spacing:1px;color:var(--accent);}
-.brand-sub{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:2px;margin-bottom:32px;}
-.lcard h2{font-size:20px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:24px;color:var(--text);}
+.brand-logo img{height:36px;}
+.brand-sub{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:4px;margin-bottom:32px;}
+.lcard h2{font-size:20px;font-weight:600;margin-bottom:24px;color:var(--text);}
 .field{margin-bottom:16px;}
-.field label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:500;}
-.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--ff);font-size:14px;outline:none;transition:border-color .2s;border-radius:4px;}
+.field label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.field input,.field select{width:100%;background:#fff;border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--ff);font-size:14px;outline:none;transition:border-color .2s;border-radius:3px;}
 .field input:focus,.field select:focus{border-color:var(--accent);}
-.btn-p{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;font-family:var(--ff);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:background .15s;border-radius:4px;}
+.btn-p{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;font-family:var(--ff);font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:background .15s;border-radius:3px;}
 .btn-p:hover{background:var(--accent2);}
 .lerr{color:var(--red);font-size:13px;margin-top:12px;text-align:center;min-height:20px;}
 
 /* APP */
-#app{display:none;min-height:100vh;position:relative;z-index:1;}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
-.topbar-left{display:flex;align-items:center;gap:12px;}
-.topbar-left img{height:24px;}
-.topbar-brand{font-size:18px;font-weight:700;letter-spacing:1px;color:var(--accent);}
+#app{display:none;min-height:100vh;}
+.topbar{background:#fff;border-bottom:2px solid var(--accent);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.topbar-left img{height:28px;}
+.topbar-brand{font-size:16px;font-weight:600;color:var(--muted);letter-spacing:0.5px;}
 .tr{display:flex;align-items:center;gap:14px;}
 .tu{font-size:13px;color:var(--muted);}
-.tu span{color:var(--text);font-weight:500;}
-.rb{padding:3px 8px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;border-radius:3px;}
-.rb-a{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(227,82,5,.3);}
-.rb-b{background:rgba(122,130,153,.1);color:var(--muted);border:1px solid var(--border);}
-.btn-lo{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-family:var(--ff);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:4px;}
+.tu span{color:var(--text);font-weight:600;}
+.rb{padding:3px 10px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;border-radius:3px;}
+.rb-a{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(227,82,5,.2);}
+.rb-b{background:#f5f5f5;color:var(--muted);border:1px solid var(--border);}
+.btn-lo{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 14px;font-family:var(--ff);font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:3px;}
 .btn-lo:hover{border-color:var(--red);color:var(--red);}
 
 /* NAV */
-.nav-tabs{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:2px;}
-.nav-tab{padding:14px 20px;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
-.nav-tab:hover{color:var(--text);}
+.nav-tabs{background:#fff;border-bottom:1px solid var(--border);padding:0 28px;display:flex;gap:0;}
+.nav-tab{padding:14px 22px;font-size:13px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;}
+.nav-tab:hover{color:var(--accent);}
 .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 .adm-tab{display:none;}
 .adm-tab.vis{display:block;}
@@ -60,118 +60,133 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);font-size:14px
 .main{padding:28px;max-width:1400px;}
 
 /* STATS */
-.srow{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
-.sc{background:var(--surface);border:1px solid var(--border);padding:16px 20px;flex:1;min-width:130px;border-radius:6px;}
-.sl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:500;}
+.srow{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;}
+.sc{background:#fff;border:1px solid var(--border);padding:18px 22px;flex:1;min-width:140px;border-radius:4px;}
+.sl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600;}
 .sv{font-size:32px;font-weight:700;line-height:1;}
 .sv.ca{color:var(--accent);}.sv.cg{color:var(--green);}.sv.cr{color:var(--red);}.sv.cb{color:var(--blue);}
 
 /* SEARCH */
 .sbar{display:flex;gap:12px;margin-bottom:22px;align-items:center;flex-wrap:wrap;}
-.swrap{position:relative;flex:1;min-width:200px;max-width:400px;}
-.swrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-.sinput{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 14px 11px 42px;font-family:var(--ff);font-size:14px;outline:none;transition:border-color .2s;border-radius:4px;}
+.swrap{position:relative;flex:1;min-width:200px;max-width:420px;}
+.swrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted2);pointer-events:none;}
+.sinput{width:100%;background:#fff;border:1px solid var(--border);color:var(--text);padding:11px 14px 11px 42px;font-family:var(--ff);font-size:14px;outline:none;transition:border-color .2s;border-radius:3px;}
 .sinput:focus{border-color:var(--accent);}
-.fsel{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--ff);font-size:13px;outline:none;cursor:pointer;border-radius:4px;}
+.fsel{background:#fff;border:1px solid var(--border);color:var(--text);padding:11px 14px;font-family:var(--ff);font-size:13px;outline:none;cursor:pointer;border-radius:3px;}
 
 /* TABLE */
-.tw{background:var(--surface);border:1px solid var(--border);overflow-x:auto;margin-bottom:20px;border-radius:6px;}
+.tw{background:#fff;border:1px solid var(--border);overflow-x:auto;margin-bottom:20px;border-radius:4px;}
 table{width:100%;border-collapse:collapse;}
-thead tr{background:var(--surface2);border-bottom:1px solid var(--border);}
-thead th{padding:11px 14px;text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:600;white-space:nowrap;}
-tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+thead tr{background:#fafafa;border-bottom:1px solid var(--border);}
+thead th{padding:11px 14px;text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap;}
+tbody tr{border-bottom:1px solid #f0f0f0;transition:background .1s;}
 tbody tr:last-child{border-bottom:none;}
-tbody tr:hover{background:var(--surface2);}
+tbody tr:hover{background:#fafafa;}
 tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
-.mid{font-size:15px;font-weight:700;letter-spacing:0.5px;font-variant-numeric:tabular-nums;}
-.mname{color:var(--muted);font-size:12px;margin-top:2px;}
-.mserial{color:var(--muted);font-size:11px;margin-top:1px;font-variant-numeric:tabular-nums;}
+.mid{font-size:15px;font-weight:700;letter-spacing:0.5px;font-variant-numeric:tabular-nums;color:var(--text);}
+.mserial{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;}
 
 /* BADGES */
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border-radius:3px;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;font-weight:700;border-radius:3px;}
 .badge::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.bl{background:rgba(76,175,130,.12);color:var(--green);border:1px solid rgba(76,175,130,.25);}
+.bl{background:rgba(46,125,50,.08);color:var(--green);border:1px solid rgba(46,125,50,.2);}
 .bl::before{background:var(--green);}
-.br{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(227,82,5,.25);}
+.br{background:var(--accent-soft);color:var(--accent);border:1px solid rgba(227,82,5,.2);}
 .br::before{background:var(--accent);}
 
 /* BUTTONS */
-.btn-res{background:var(--accent);color:#fff;border:none;padding:7px 14px;font-family:var(--ff);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s;border-radius:4px;}
+.btn-res{background:var(--accent);color:#fff;border:none;padding:7px 16px;font-family:var(--ff);font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;border-radius:3px;}
 .btn-res:hover{background:var(--accent2);}
-.btn-rel{background:transparent;color:var(--red);border:1px solid var(--red);padding:7px 14px;font-family:var(--ff);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:4px;}
-.btn-rel:hover{background:rgba(224,82,82,.1);}
-.btn-add{background:var(--accent);color:#fff;border:none;padding:11px 18px;font-family:var(--ff);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s;white-space:nowrap;border-radius:4px;}
+.btn-rel{background:transparent;color:var(--red);border:1px solid var(--red);padding:7px 16px;font-family:var(--ff);font-size:12px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:3px;}
+.btn-rel:hover{background:rgba(211,47,47,.06);}
+.btn-add{background:var(--accent);color:#fff;border:none;padding:11px 20px;font-family:var(--ff);font-size:13px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;white-space:nowrap;border-radius:3px;}
 .btn-add:hover{background:var(--accent2);}
 .btn-sm{background:transparent;color:var(--muted);border:1px solid var(--border);padding:5px 12px;font-size:12px;font-family:var(--ff);cursor:pointer;transition:all .15s;border-radius:3px;}
-.btn-sm:hover{border-color:var(--text);color:var(--text);}
-.btn-del{background:transparent;color:var(--red);border:1px solid var(--red);padding:5px 12px;font-size:12px;font-family:var(--ff);cursor:pointer;transition:all .15s;border-radius:3px;}
-.btn-del:hover{background:rgba(224,82,82,.1);}
+.btn-sm:hover{border-color:var(--accent);color:var(--accent);}
+.btn-del{background:transparent;color:var(--red);border:1px solid rgba(211,47,47,.3);padding:5px 12px;font-size:12px;font-family:var(--ff);cursor:pointer;transition:all .15s;border-radius:3px;}
+.btn-del:hover{background:rgba(211,47,47,.06);}
 
 /* COUNTDOWN */
 .cd{font-size:12px;color:var(--muted);margin-top:2px;}
 .cd.urg{color:var(--red);font-weight:600;}
 
 /* MODAL */
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
 .mo.open{opacity:1;pointer-events:all;}
-.md{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--accent);padding:34px 30px;width:420px;transform:translateY(12px);transition:transform .2s;border-radius:8px;}
+.md{background:#fff;border:1px solid var(--border);border-top:3px solid var(--accent);padding:34px 30px;width:440px;transform:translateY(12px);transition:transform .2s;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,.12);}
 .mo.open .md{transform:translateY(0);}
-.md h3{font-size:18px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+.md h3{font-size:18px;font-weight:700;margin-bottom:6px;}
 .md-meta{font-size:13px;color:var(--muted);margin-bottom:18px;}
 .md-meta strong{color:var(--accent);}
-.md-info{background:var(--bg);border:1px solid var(--border);padding:13px 15px;font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.7;border-radius:4px;}
-.md-info span{color:var(--text);}
+.md-info{background:#fafafa;border:1px solid var(--border);padding:14px 16px;font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.7;border-radius:3px;}
+.md-info span{color:var(--text);font-weight:500;}
 .md-act{display:flex;gap:10px;}
-.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:11px;font-family:var(--ff);font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:4px;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--muted);padding:11px;font-family:var(--ff);font-size:13px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;border-radius:3px;}
 .btn-cancel:hover{border-color:var(--text);color:var(--text);}
-.btn-conf{flex:2;background:var(--accent);border:none;color:#fff;padding:11px;font-family:var(--ff);font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s;border-radius:4px;}
+.btn-conf{flex:2;background:var(--accent);border:none;color:#fff;padding:11px;font-family:var(--ff);font-size:13px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;transition:background .15s;border-radius:3px;}
 .btn-conf:hover{background:var(--accent2);}
 
 /* SECTION */
-.sec{background:var(--surface);border:1px solid var(--border);padding:22px;margin-bottom:20px;border-radius:6px;}
-.sec-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.sec{background:#fff;border:1px solid var(--border);padding:24px;margin-bottom:20px;border-radius:4px;}
+.sec-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .add-form{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;}
 .add-form .field{margin-bottom:0;flex:1;min-width:120px;}
 
+/* BULK UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:4px;padding:32px 24px;text-align:center;transition:all .2s;cursor:pointer;background:#fafafa;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:var(--accent-soft);}
+.upload-zone svg{margin-bottom:10px;color:var(--muted2);}
+.upload-zone p{font-size:14px;color:var(--muted);margin-bottom:4px;}
+.upload-zone .uz-main{font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.upload-zone .uz-link{color:var(--accent);font-weight:600;cursor:pointer;}
+.upload-zone .uz-link:hover{text-decoration:underline;}
+.upload-hint{background:#fafafa;border:1px solid var(--border);border-radius:3px;padding:14px 16px;margin-top:14px;font-size:13px;color:var(--muted);line-height:1.7;}
+.upload-hint code{background:#f0f0f0;padding:1px 5px;border-radius:2px;font-size:12px;color:var(--text);font-family:'SF Mono',Consolas,monospace;}
+.upload-preview{margin-top:16px;}
+.upload-preview table{font-size:12px;}
+.upload-preview .up-count{font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;}
+.upload-preview .up-new{color:var(--green);font-weight:600;}
+.upload-preview .up-skip{color:var(--muted);}
+
 /* LOG */
-.log-entry{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border);padding:11px 14px;margin-bottom:5px;font-size:13px;border-radius:4px;}
+.log-entry{background:#fff;border:1px solid var(--border);border-left:3px solid var(--border);padding:11px 14px;margin-bottom:5px;font-size:13px;border-radius:3px;}
 .log-entry.login{border-left-color:var(--blue);}
 .log-entry.reserve{border-left-color:var(--accent);}
 .log-entry.release{border-left-color:var(--green);}
 .log-entry.admin{border-left-color:var(--muted);}
 .log-entry.logout{border-left-color:var(--red);}
-.log-time{font-size:11px;color:var(--muted);margin-top:3px;}
+.log-time{font-size:11px;color:var(--muted2);margin-top:3px;}
 .lf-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.lf-btn{padding:5px 14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;border-radius:3px;}
-.lf-btn.active,.lf-btn:hover{border-color:var(--accent);color:var(--accent);}
+.lf-btn{padding:6px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .15s;border-radius:3px;}
+.lf-btn.active,.lf-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
 
 /* DASHBOARD */
 .dg2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px;}
-.cc{background:var(--surface);border:1px solid var(--border);padding:20px;border-radius:6px;}
+.cc{background:#fff;border:1px solid var(--border);padding:22px;border-radius:4px;}
 .ct{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
 .cw{position:relative;height:200px;}
-.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f0f0;}
 .lb-item:last-child{border-bottom:none;}
-.lb-rank{font-size:18px;font-weight:700;color:var(--muted);width:24px;text-align:center;}
+.lb-rank{font-size:18px;font-weight:700;color:var(--muted2);width:24px;text-align:center;}
 .lb-rank.top{color:var(--accent);}
 .lb-name{flex:1;font-size:13px;}
-.lb-bar-bg{flex:2;background:var(--bg);height:5px;border-radius:3px;}
+.lb-bar-bg{flex:2;background:#f0f0f0;height:5px;border-radius:3px;}
 .lb-bar{height:5px;background:var(--accent);border-radius:3px;}
 .lb-n{font-size:18px;font-weight:700;}
-.ari{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.ari{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px;}
 .ari:last-child{border-bottom:none;}
 
 /* USERS */
-.u-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);}
+.u-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #f0f0f0;}
 .u-row:last-child{border-bottom:none;}
 .u-info{display:flex;align-items:center;gap:10px;}
-.u-av{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);border-radius:50%;}
-.u-name{font-size:14px;font-weight:500;}
+.u-av{width:36px;height:36px;background:var(--accent-soft);border:1px solid rgba(227,82,5,.15);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent);border-radius:50%;}
+.u-name{font-size:14px;font-weight:600;}
 .u-un{font-size:12px;color:var(--muted);}
 .u-act{display:flex;gap:8px;align-items:center;}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--accent);padding:13px 18px;font-size:14px;z-index:999;transform:translateX(120%);transition:transform .3s;max-width:340px;border-radius:6px;}
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1px solid var(--border);border-left:3px solid var(--accent);padding:14px 20px;font-size:14px;z-index:999;transform:translateX(120%);transition:transform .3s;max-width:360px;border-radius:4px;box-shadow:0 4px 16px rgba(0,0,0,.1);}
 .toast.show{transform:translateX(0);}
 .toast.err{border-left-color:var(--red);}
 .toast.ok{border-left-color:var(--green);}
@@ -180,7 +195,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 /* PAGINATION */
 .pag{display:flex;align-items:center;justify-content:space-between;padding:12px 0;font-size:13px;color:var(--muted);}
 .pag-btns{display:flex;gap:4px;}
-.pag-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12px;cursor:pointer;border-radius:3px;transition:all .15s;}
+.pag-btn{background:#fff;border:1px solid var(--border);color:var(--muted);padding:6px 12px;font-size:12px;cursor:pointer;border-radius:3px;transition:all .15s;}
 .pag-btn:hover{border-color:var(--accent);color:var(--accent);}
 .pag-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);}
 .pag-btn:disabled{opacity:.4;cursor:default;}
@@ -232,7 +247,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     <div class="sbar">
       <div class="swrap">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="sinput" type="text" id="si" placeholder="Sog paa Equipment Number, serienummer eller type..." oninput="curPage=1;rMachines()">
+        <input class="sinput" type="text" id="si" placeholder="Soeg paa Equipment Number, serienummer eller type..." oninput="curPage=1;rMachines()">
       </div>
       <select class="fsel" id="fs" onchange="curPage=1;rMachines()">
         <option value="alle">Alle maskiner</option>
@@ -301,8 +316,27 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 
   <!-- ADMIN (maskiner) -->
   <div class="main" id="tab-admin" style="display:none">
+    <!-- BULK UPLOAD -->
+    <div class="sec" id="bulk-section" style="display:none">
+      <div class="sec-title">Bulk upload maskiner (CSV / Excel)</div>
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="uz-main">Traek fil hertil eller <span class="uz-link">vaelg fil</span></div>
+        <p>Accepterer .csv og .xlsx filer</p>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
+      </div>
+      <div class="upload-hint">
+        <strong>Filen skal indeholde disse kolonner (raekkefoelge er ligegyldig):</strong><br>
+        <code>ASSET TYPE</code> = Maskintype (f.eks. RX6035, EXV-SF14)<br>
+        <code>EQUIPMENT NUMBER</code> = 7-cifret Equipment Nr. (unik ID)<br>
+        <code>SERIAL NUMBER</code> = Serienummer<br><br>
+        Foerste raekke skal vaere kolonnenavne. Maskiner der allerede findes bliver sprunget over.
+      </div>
+      <div id="upload-preview" class="upload-preview"></div>
+    </div>
+
     <div class="sec">
-      <div class="sec-title">Tilfoej maskine</div>
+      <div class="sec-title">Tilfoej enkelt maskine</div>
       <div class="add-form">
         <div class="field"><label>Equipment Nr. (7 cifre)</label><input type="text" id="nm-id" placeholder="1234567" maxlength="7"></div>
         <div class="field"><label>Type</label><input type="text" id="nm-type" placeholder="f.eks. RX6035"></div>
@@ -313,7 +347,7 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
     <div class="sec">
       <div class="sec-title">Alle maskiner (<span id="am-count">0</span>)</div>
       <div style="margin-bottom:12px">
-        <input class="sinput" type="text" id="am-search" placeholder="Sog i admin-liste..." oninput="rAdminM()" style="max-width:300px;padding-left:14px;">
+        <input class="sinput" type="text" id="am-search" placeholder="Soeg i admin-liste..." oninput="rAdminM()" style="max-width:300px;padding-left:14px;">
       </div>
       <div class="tw" style="margin-bottom:0"><table>
         <thead><tr><th>Equipment Nr.</th><th>Type</th><th>Serienummer</th><th>Status</th><th>Reserveret af</th><th>Fjern</th></tr></thead>
@@ -342,12 +376,12 @@ tbody td{padding:12px 14px;font-size:13px;vertical-align:middle;}
 const RES_DAYS_NORMAL = 7;
 const RES_DAYS_ADMIN = 14;
 const PER_PAGE = 50;
+const BULK_ADMIN = 'mads.olsen';
 
 let cu = null, logFilter = 'alle', pendId = null, pendAct = null, charts = {}, curPage = 1;
 
 const D = 86400000, N = Date.now();
 
-// ── USERS ──
 let users = {
   'mads.olsen':        {password:'Still8847',  displayName:'Mads Olsen',          role:'admin'},
   'morten.nyhuus':     {password:'Still3291',  displayName:'Morten Nyhuus',       role:'bruger'},
@@ -366,7 +400,6 @@ let users = {
   'nicolai.bonde':     {password:'Still6258',  displayName:'Nicolai Bonde',       role:'bruger'},
 };
 
-// ── MACHINES (from CSV) ──
 const csvData = `EXV-SF14I;4958152;F20326G00035
 EXV-SF14I;4955549;F20326G00028
 RX2016C;5562800;516220J00052
@@ -550,7 +583,6 @@ csvData.trim().split('\n').forEach(line => {
   };
 });
 
-// Build type filter dropdown
 function buildTypeFilter() {
   const types = [...new Set(Object.values(machines).map(m => m.type))].sort();
   const sel = document.getElementById('fs-type');
@@ -567,7 +599,6 @@ const mNames = ['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov
 
 document.title = 'STILL Danmark \u2014 Maskinreservation';
 
-// ── LOGIN ──
 function doLogin() {
   const u = document.getElementById('lu').value.trim().toLowerCase();
   const p = document.getElementById('lp').value;
@@ -582,6 +613,8 @@ function doLogin() {
   rb.textContent = user.role === 'admin' ? 'Admin' : 'Bruger';
   rb.className = 'rb ' + (user.role === 'admin' ? 'rb-a' : 'rb-b');
   if (user.role === 'admin') document.querySelectorAll('.adm-tab').forEach(e => e.classList.add('vis'));
+  const bulkSec = document.getElementById('bulk-section');
+  if (bulkSec) bulkSec.style.display = (u === BULK_ADMIN) ? 'block' : 'none';
   rAll(); checkExp();
 }
 
@@ -600,7 +633,6 @@ function doLogout() {
 document.getElementById('lp').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('lu').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('lp').focus(); });
 
-// ── HELPERS ──
 function getResDays() { return cu?.role === 'admin' ? RES_DAYS_ADMIN : RES_DAYS_NORMAL; }
 function alog(type, tekst, maskinId, bruger) {
   logs.unshift({type, tekst, maskinId:maskinId||'', tid:new Date(), bruger: bruger || cu?.displayName});
@@ -629,13 +661,11 @@ function checkExp() {
   setTimeout(checkExp, 60000);
 }
 
-// ── RENDER ALL ──
 function rAll() {
   rMachines(); rStats();
   if (cu?.role==='admin') { rLog(); rAdminM(); rUsers(); }
 }
 
-// ── STATS ──
 function rStats() {
   const total = Object.keys(machines).length;
   const res = Object.values(machines).filter(m=>m.status==='reserveret').length;
@@ -646,7 +676,6 @@ function rStats() {
     '<div class="sc"><div class="sl">Udnyttelse</div><div class="sv cb">'+(total?Math.round(res/total*100):0)+'%</div></div>';
 }
 
-// ── MASKINER ──
 function rMachines() {
   const search = (document.getElementById('si')?.value||'').toLowerCase();
   const filter = document.getElementById('fs')?.value||'alle';
@@ -686,7 +715,6 @@ function rMachines() {
     return '<tr><td><div class="mid">'+id+'</div></td><td><div style="font-size:13px;font-weight:500">'+m.type+'</div></td><td><div class="mserial">'+m.serial+'</div></td><td>'+badge+'</td><td>'+resBy+'</td><td>'+udl+'</td><td>'+action+'</td></tr>';
   }).join('');
 
-  // Pagination
   let pagHtml = '<div>Viser '+(start+1)+'\u2013'+Math.min(start+PER_PAGE,list.length)+' af '+list.length+' maskiner</div><div class="pag-btns">';
   pagHtml += '<button class="pag-btn" onclick="curPage=1;rMachines()" '+(curPage===1?'disabled':'')+'>&laquo;</button>';
   pagHtml += '<button class="pag-btn" onclick="curPage--;rMachines()" '+(curPage===1?'disabled':'')+'>&lsaquo;</button>';
@@ -699,7 +727,6 @@ function rMachines() {
   document.getElementById('pag').innerHTML = pagHtml;
 }
 
-// ── MODAL ──
 function openM(action, id) {
   const m = machines[id]; pendId=id; pendAct=action;
   const btn = document.getElementById('m-btn');
@@ -734,7 +761,6 @@ function doRel() {
   closeModal(); rAll(); toast('Maskine '+id+' er nu ledig.','ok');
 }
 
-// ── LOG ──
 function fLog(type, btn) {
   logFilter=type;
   document.querySelectorAll('.lf-btn').forEach(b=>b.classList.remove('active'));
@@ -749,7 +775,6 @@ function rLog() {
   ).join('');
 }
 
-// ── ADMIN MASKINER ──
 function addMachine() {
   const id=document.getElementById('nm-id').value.trim();
   const type=document.getElementById('nm-type').value.trim();
@@ -787,7 +812,111 @@ function rAdminM() {
   '</tr>').join('');
 }
 
-// ── BRUGERE ──
+// BULK UPLOAD
+let pendingBulk = null;
+
+const uz = document.getElementById('upload-zone');
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('dragover'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('dragover'));
+uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('dragover'); if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+
+function handleFile(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['csv','xlsx','xls'].includes(ext)) { toast('Kun .csv og .xlsx filer understoeettes.','err'); return; }
+  const reader = new FileReader();
+  if (ext === 'csv') {
+    reader.onload = e => parseCSV(e.target.result);
+    reader.readAsText(file);
+  } else {
+    reader.onload = e => {
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const csv = XLSX.utils.sheet_to_csv(ws, {FS:';'});
+      parseCSV(csv);
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n').map(l => l.replace(/\r/g,''));
+  if (lines.length < 2) { toast('Filen er tom eller har kun overskrifter.','err'); return; }
+  const header = lines[0].split(';').map(h => h.trim().toUpperCase().replace(/["\uFEFF]/g,''));
+  let iType = header.findIndex(h => h.includes('ASSET') && h.includes('TYPE'));
+  let iEq = header.findIndex(h => h.includes('EQUIPMENT') && h.includes('NUMBER'));
+  let iSerial = header.findIndex(h => h.includes('SERIAL') && h.includes('NUMBER'));
+  if (iEq === -1) {
+    const headerC = lines[0].split(',').map(h => h.trim().toUpperCase().replace(/["\uFEFF]/g,''));
+    const iEqC = headerC.findIndex(h => h.includes('EQUIPMENT') && h.includes('NUMBER'));
+    if (iEqC !== -1) {
+      const commaLines = lines.map(l => l.split(',').map(c => c.trim().replace(/^"|"$/g,'')));
+      const iTypeC = headerC.findIndex(h => h.includes('ASSET') && h.includes('TYPE'));
+      const iSerialC = headerC.findIndex(h => h.includes('SERIAL') && h.includes('NUMBER'));
+      return processParsed(commaLines.slice(1), iTypeC, iEqC, iSerialC);
+    }
+    toast('Kolonne EQUIPMENT NUMBER ikke fundet. Tjek overskrifter.','err');
+    return;
+  }
+  const rows = lines.slice(1).map(l => l.split(';').map(c => c.trim().replace(/^"|"$/g,'')));
+  processParsed(rows, iType, iEq, iSerial);
+}
+
+function processParsed(rows, iType, iEq, iSerial) {
+  const parsed = [];
+  let skipped = 0;
+  rows.forEach(cols => {
+    const eq = cols[iEq]?.trim();
+    if (!eq || !/^\d{7}$/.test(eq)) return;
+    const type = iType >= 0 ? (cols[iType]?.trim()||'Ukendt') : 'Ukendt';
+    const serial = iSerial >= 0 ? (cols[iSerial]?.trim()||'') : '';
+    if (machines[eq]) { skipped++; return; }
+    parsed.push({eq, type, serial});
+  });
+  pendingBulk = parsed;
+  const prev = document.getElementById('upload-preview');
+  if (!parsed.length && !skipped) {
+    prev.innerHTML = '<div style="padding:14px;color:var(--red);font-size:13px">Ingen gyldige maskiner fundet i filen.</div>';
+    return;
+  }
+  let html = '<div class="up-count">Fundet: <span class="up-new">'+parsed.length+' nye maskiner</span>';
+  if (skipped) html += ' &middot; <span class="up-skip">'+skipped+' allerede i systemet (springes over)</span>';
+  html += '</div>';
+  if (parsed.length) {
+    html += '<div class="tw"><table><thead><tr><th>Equipment Nr.</th><th>Type</th><th>Serienummer</th></tr></thead><tbody>';
+    html += parsed.slice(0,10).map(r => '<tr><td class="mid">'+r.eq+'</td><td>'+r.type+'</td><td class="mserial">'+r.serial+'</td></tr>').join('');
+    if (parsed.length > 10) html += '<tr><td colspan="3" style="text-align:center;color:var(--muted);font-size:12px;padding:8px">... og '+(parsed.length-10)+' mere</td></tr>';
+    html += '</tbody></table></div>';
+    html += '<button class="btn-add" onclick="confirmBulk()" style="margin-top:10px">Importer '+parsed.length+' maskiner</button>';
+    html += ' <button class="btn-sm" onclick="cancelBulk()" style="margin-top:10px">Annuller</button>';
+  }
+  prev.innerHTML = html;
+}
+
+function confirmBulk() {
+  if (!pendingBulk || !pendingBulk.length) return;
+  let count = 0;
+  pendingBulk.forEach(r => {
+    if (!machines[r.eq]) {
+      machines[r.eq] = {type:r.type, serial:r.serial, status:'ledig', reserveretAf:null, reserveretDato:null, udloeber:null};
+      count++;
+    }
+  });
+  alog('admin','Bulk upload: '+count+' maskiner importeret');
+  pendingBulk = null;
+  document.getElementById('upload-preview').innerHTML = '';
+  document.getElementById('file-input').value = '';
+  buildTypeFilter();
+  rAll();
+  toast(count+' maskiner importeret.','ok');
+}
+
+function cancelBulk() {
+  pendingBulk = null;
+  document.getElementById('upload-preview').innerHTML = '';
+  document.getElementById('file-input').value = '';
+}
+
 function addUser() {
   const u=document.getElementById('nu-u').value.trim().toLowerCase();
   const d=document.getElementById('nu-d').value.trim();
@@ -832,7 +961,6 @@ function rUsers() {
   nl.innerHTML=normals.length?normals.map(row).join(''):'<div class="empty" style="padding:16px">Ingen brugere.</div>';
 }
 
-// ── DASHBOARD ──
 function rDash() {
   const total=Object.keys(machines).length;
   const res=Object.values(machines).filter(m=>m.status==='reserveret').length;
@@ -846,7 +974,6 @@ function rDash() {
     '<div class="sc"><div class="sl">Denne maaned</div><div class="sv cb">'+thisM+'</div></div>'+
     '<div class="sc"><div class="sl">Logins total</div><div class="sv">'+logins+'</div></div>';
 
-  // Monthly bar
   const monthlyData = new Array(12).fill(0);
   logs.filter(l=>l.type==='reserve').forEach(l=>{
     const m = new Date(l.tid).getMonth();
@@ -854,14 +981,12 @@ function rDash() {
   });
   const mc=document.getElementById('c-monthly');
   if (charts.m) charts.m.destroy();
-  charts.m=new Chart(mc,{type:'bar',data:{labels:mNames,datasets:[{data:monthlyData,backgroundColor:'rgba(227,82,5,0.22)',borderColor:'rgba(227,82,5,0.75)',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#7a8299',font:{family:'Inter',size:11}},grid:{color:'#2c3040'}},y:{ticks:{color:'#7a8299',font:{family:'Inter',size:11},stepSize:1},grid:{color:'#2c3040'}}}}});
+  charts.m=new Chart(mc,{type:'bar',data:{labels:mNames,datasets:[{data:monthlyData,backgroundColor:'rgba(227,82,5,0.15)',borderColor:'rgba(227,82,5,0.6)',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#757575',font:{family:'Inter',size:11}},grid:{color:'#f0f0f0'}},y:{ticks:{color:'#757575',font:{family:'Inter',size:11},stepSize:1},grid:{color:'#f0f0f0'}}}}});
 
-  // Donut
   const dc=document.getElementById('c-donut');
   if (charts.d) charts.d.destroy();
-  charts.d=new Chart(dc,{type:'doughnut',data:{labels:['Ledige','Reserverede'],datasets:[{data:[ledig,res],backgroundColor:['rgba(76,175,130,0.55)','rgba(227,82,5,0.55)'],borderColor:['rgba(76,175,130,1)','rgba(227,82,5,1)'],borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#7a8299',font:{family:'Inter',size:12},padding:14}}}}});
+  charts.d=new Chart(dc,{type:'doughnut',data:{labels:['Ledige','Reserverede'],datasets:[{data:[ledig,res],backgroundColor:['rgba(46,125,50,0.5)','rgba(227,82,5,0.5)'],borderColor:['rgba(46,125,50,1)','rgba(227,82,5,1)'],borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#757575',font:{family:'Inter',size:12},padding:14}}}}});
 
-  // Leaderboard
   const counts={};
   logs.filter(l=>l.type==='reserve').forEach(l=>{ counts[l.bruger]=(counts[l.bruger]||0)+1; });
   const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
@@ -875,7 +1000,6 @@ function rDash() {
       '</div>').join('')
     : '<div class="empty" style="padding:20px">Ingen data endnu.</div>';
 
-  // Active reservations
   const active=Object.entries(machines).filter(([,m])=>m.status==='reserveret');
   const el=document.getElementById('ar-list');
   el.innerHTML=active.length
@@ -889,7 +1013,6 @@ function rDash() {
     : '<div class="empty" style="padding:20px">Ingen aktive reservationer.</div>';
 }
 
-// ── TABS ──
 function go(tab) {
   ['maskiner','dashboard','log','brugere','admin'].forEach(t=>{
     const el=document.getElementById('tab-'+t);
@@ -903,14 +1026,12 @@ function go(tab) {
   if(tab==='admin') rAdminM();
 }
 
-// ── TOAST ──
 function toast(msg, type) {
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast show '+(type||'');
   setTimeout(()=>t.className='toast',3500);
 }
 
-// ── INIT ──
 buildTypeFilter();
 </script>
 </body>
