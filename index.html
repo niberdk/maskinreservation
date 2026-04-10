@@ -1,2 +1,15 @@
 <!DOCTYPE html>
-<html><head><meta http-equiv="refresh" content="0;url=/still/"></head></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redirecting…</title>
+<script>
+const trimmedPath = window.location.pathname.replace(/\/+$/, '');
+const basePath = trimmedPath && trimmedPath !== '/' ? trimmedPath : '';
+window.location.replace((basePath || '') + '/still/' + window.location.search + window.location.hash);
+</script>
+<noscript>
+<meta http-equiv="refresh" content="0;url=still/">
+</noscript>
+</head>
+</html>
